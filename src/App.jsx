@@ -5,9 +5,7 @@ import {
   Dumbbell,
   Target,
   FileText,
-  Download,
-  Upload,
-  RotateCcw
+  UserCircle
 } from 'lucide-react';
 
 import {
@@ -24,6 +22,7 @@ import Workouts from './components/Workouts.jsx';
 import Goals from './components/Goals.jsx';
 import MealPlan from './components/MealPlan.jsx';
 import AuthBar from './components/AuthBar.jsx';
+import Profile from './components/Profile.jsx';
 
 import {
   loginWithGoogle,
@@ -56,8 +55,10 @@ const tabs = [
   { id: 'pasti', label: 'Pasti', icon: UtensilsCrossed },
   { id: 'allenamenti', label: 'Sport', icon: Dumbbell },
   { id: 'obiettivi', label: 'Obiettivi', icon: Target },
-  { id: 'piano', label: 'Piano', icon: FileText }
+  { id: 'piano', label: 'Piano', icon: FileText },
+  { id: 'profilo', label: 'Profilo', icon: UserCircle }
 ];
+
 
 export default function App() {
   const [state, setState] = useState(loadState);
@@ -317,48 +318,17 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <header className="app-header">
-        <div>
-          <p className="eyebrow">Web app locale + cloud</p>
-          <h1>Dieta AI</h1>
-        </div>
+		<header className="app-header">
+			<div>
+				<p className="eyebrow">Dieta AI</p>
+				<h1>IL MIO PIANO ALIMENTARE</h1>
+			</div>
 
-        <div className="header-actions">
-          <button
-            className="icon-btn"
-            onClick={() => exportBackup(state)}
-            title="Esporta backup"
-          >
-            <Download size={18} />
-          </button>
+			<div className={user ? "mini-cloud-badge success" : "mini-cloud-badge local"}>
+				{user ? "☁️ Cloud" : "📱 Locale"}
+			</div>
+		</header>
 
-          <label className="icon-btn" title="Importa backup">
-            <Upload size={18} />
-            <input
-              hidden
-              type="file"
-              accept="application/json"
-              onChange={handleImport}
-            />
-          </label>
-
-          <button
-            className="icon-btn danger"
-            onClick={resetAll}
-            title="Reset dati"
-          >
-            <RotateCcw size={18} />
-          </button>
-        </div>
-      </header>
-
-      <AuthBar
-        user={user}
-        syncStatus={syncStatus}
-        onLogin={handleLogin}
-        onLogout={handleLogout}
-        onUploadLocal={uploadLocalToCloud}
-      />
 
       {notice && (
         <div className="notice" onClick={() => setNotice('')}>
@@ -412,6 +382,19 @@ export default function App() {
             onLogMeal={addMeal}
           />
         )}
+		
+		{tab === 'profilo' && (
+		 <Profile
+			user={user}
+			syncStatus={syncStatus}
+			onLogin={handleLogin}
+			onLogout={handleLogout}
+			onUploadLocal={uploadLocalToCloud}
+			onExport={() => exportBackup(state)}
+			onImport={handleImport}
+			onReset={resetAll}
+		 />
+		)}
       </main>
 
       <nav className="bottom-nav">
