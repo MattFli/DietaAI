@@ -274,14 +274,23 @@ export default function App() {
   }
 
   async function handleLogin() {
-    try {
-      setSyncStatus('Accesso Google...');
-      await loginWithGoogle();
-    } catch (error) {
-      console.error('Errore login Google:', error);
-      setSyncStatus('Accesso annullato o non riuscito');
-    }
+  try {
+    setSyncStatus('Accesso Google...');
+    await loginWithGoogle();
+  } catch (error) {
+    console.error('Errore login Google:', error);
+
+    alert(
+      'Errore login Google:\n\n' +
+      (error.code || 'Codice non disponibile') +
+      '\n\n' +
+      (error.message || 'Messaggio non disponibile')
+    );
+
+    setSyncStatus('Accesso annullato o non riuscito');
   }
+}
+
 
   async function handleLogout() {
     try {
