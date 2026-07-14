@@ -5,7 +5,9 @@ import {
   signInWithRedirect,
   getRedirectResult,
   signOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  setPersistence,
+  browserLocalPersistence
 } from "firebase/auth";
 import {
   getFirestore,
@@ -16,18 +18,22 @@ import {
 } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAzHGWwaRYQWZh6qWkU29lK5rPNAQAA-lc",
-  authDomain: "dietaai-75085.firebaseapp.com",
+  apiKey: "...",
+  authDomain: "dieta-ai-five.vercel.app",
   projectId: "dietaai-75085",
   storageBucket: "dietaai-75085.firebasestorage.app",
   messagingSenderId: "773936796279",
-  appId: "1:773936796279:web:8d038e4a36bc4f5259ac72"
+  appId: "..."
 };
 
 const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+
+setPersistence(auth, browserLocalPersistence).catch((error) => {
+  console.error("Errore persistenza auth:", error);
+});
 
 const provider = new GoogleAuthProvider();
 
