@@ -279,14 +279,6 @@ export default function App() {
     await loginWithGoogle();
   } catch (error) {
     console.error('Errore login Google:', error);
-
-    alert(
-      'Errore login Google:\n\n' +
-      (error.code || 'Codice non disponibile') +
-      '\n\n' +
-      (error.message || 'Messaggio non disponibile')
-    );
-
     setSyncStatus('Accesso annullato o non riuscito');
   }
 }
