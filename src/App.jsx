@@ -6,6 +6,15 @@ import Meals from './components/Meals.jsx';
 import Workouts from './components/Workouts.jsx';
 import Goals from './components/Goals.jsx';
 import MealPlan from './components/MealPlan.jsx';
+import AuthBar from './components/AuthBar.jsx';
+
+import {
+loginWithGoogle,
+logout,
+listenAuthState,
+loadCloudState,
+saveCloudState
+} from './services/firebaseService.js';
 
 export function uid() { return Math.random().toString(36).slice(2, 10); }
 export function todayKey() { return new Date().toISOString().slice(0, 10); }
@@ -24,8 +33,61 @@ export default function App() {
   const [state, setState] = useState(loadState);
   const [tab, setTab] = useState('oggi');
   const [notice, setNotice] = useState('');
+  const [user, setUser] = useState(null);
+  const [syncStatus, setSyncStatus] = useState('Modalità locale');
+  const [cloudLoaded, setCloudLoaded] = useState(false);
 
-  useEffect(() => saveState(state), [state]);
+    useEffect(() => {
+    saveState(state);
+
+    if (!user || !cloudLoaded) {
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        setSyncStatus('Sincronizzazione...');
+        await saveCloudState(user.uid, state);
+        setSyncStatus('Cloud sincronizzato');
+      } catch (error) {
+        console.error(error);
+        setSyncStatus('Errore sincronizzazione cloud');
+      }
+    }, 800);
+
+    return () => clearTimeout(timer);
+  }, [state, user, cloudLoaded]);
+  
+    useEffect(() => {
+    const unsubscribe = listenAuthState(async (firebaseUser) => {
+      setUser(firebaseUser);
+
+      if (firebaseUser) {
+        setSyncStatus('Caricamento dati cloud...');
+
+        try {
+          const cloudState = await loadCloudState(firebaseUser.uid);
+
+          if (cloudState) {
+            setState({ ...defaultState, ...cloudState });
+            setSyncStatus('Dati caricati dal cloud');
+          } else {
+            setSyncStatus('Cloud pronto - nessun dato precedente');
+          }
+        } catch (error) {
+          console.error(error);
+          setSyncStatus('Errore caricamento cloud');
+        }
+
+        setCloudLoaded(true);
+      } else {
+        setSyncStatus('Modalità locale');
+        setCloudLoaded(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const todayMeals = state.meals.filter(m => m.date === todayKey());
   const todayWorkouts = state.workouts.filter(w => w.date === todayKey());
@@ -64,6 +126,46 @@ export default function App() {
     }
     e.target.value = '';
   }
+  
+    async function handleLogin() {
+  try {
+    setSyncStatus('Accesso Google...');
+    await loginWithGoogle();
+  } catch (error) {
+    console.error("Errore login Google:", error);
+    setSyncStatus('Accesso annullato o non riuscito');
+  }
+}
+
+  async function handleLogout() {
+    try {
+      await logout();
+      setUser(null);
+      setSyncStatus('Modalità locale');
+    } catch (error) {
+      console.error(error);
+      setSyncStatus('Errore logout');
+    }
+  }
+
+  async function uploadLocalToCloud() {
+    if (!user) {
+      return;
+    }
+
+    if (!confirm('Vuoi caricare i dati locali attuali nel tuo account Google?')) {
+      return;
+    }
+
+    try {
+      setSyncStatus('Caricamento dati locali nel cloud...');
+      await saveCloudState(user.uid, state);
+      setSyncStatus('Dati locali caricati nel cloud');
+    } catch (error) {
+      console.error(error);
+      setSyncStatus('Errore caricamento dati locali');
+    }
+  }
 
   return <div className="app-shell">
     <header className="app-header">
@@ -77,6 +179,13 @@ export default function App() {
         <button className="icon-btn danger" onClick={resetAll} title="Reset dati"><RotateCcw size={18}/></button>
       </div>
     </header>
+	    <AuthBar
+      user={user}
+      syncStatus={syncStatus}
+      onLogin={handleLogin}
+      onLogout={handleLogout}
+      onUploadLocal={uploadLocalToCloud}
+    />
     {notice && <div className="notice" onClick={() => setNotice('')}>{notice}</div>}
     <main className="content">
       {tab === 'oggi' && <Dashboard state={state} totals={totals} burned={burned} todayMeals={todayMeals} todayWorkouts={todayWorkouts} onGoTab={setTab} onWeight={logWeight}/>} 
