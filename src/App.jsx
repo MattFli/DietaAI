@@ -16,6 +16,22 @@ loadCloudState,
 saveCloudState
 } from './services/firebaseService.js';
 
+import { getGoogleRedirectResult } from './services/firebaseService.js';
+
+useEffect(() => {
+  getGoogleRedirectResult().then((result) => {
+    if (result && result.user) {
+      setUser(result.user);
+      setSyncStatus('Accesso Google completato');
+    }
+  }).catch((error) => {
+    if (error) {
+      console.error("Errore redirect Google:", error);
+      setSyncStatus('Errore login Google');
+    }
+  });
+}, []);
+
 export function uid() { return Math.random().toString(36).slice(2, 10); }
 export function todayKey() { return new Date().toISOString().slice(0, 10); }
 export function nowTime() { return new Date().toTimeString().slice(0, 5); }
