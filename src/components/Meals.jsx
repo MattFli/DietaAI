@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Trash2, Star, Plus } from 'lucide-react';
+import { Trash2, Star, Plus, Clock3, ChevronDown, ChevronUp } from 'lucide-react';
 import { num } from '../App.jsx';
 
 function fmtDate(d) { return new Date(d + 'T00:00:00').toLocaleDateString('it-IT', { weekday:'short', day:'numeric', month:'short' }); }
@@ -16,8 +16,27 @@ export default function Meals({
 }) {
   const [form, setForm] = useState(emptyForm);
   const [photoName, setPhotoName] = useState('');
+  const [showRecentMeals, setShowRecentMeals] = useState(false);
   const sorted = [...meals].sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time));
   const grouped = sorted.reduce((acc,m)=>{(acc[m.date]=acc[m.date]||[]).push(m);return acc;},{});
+  const recentMeals = sorted.reduce((acc, meal) => {
+  const key = meal.name.toLowerCase().trim();
+
+  const alreadyAdded = acc.some((item) => item.key === key);
+
+  if (!alreadyAdded) {
+		acc.push({
+		key,
+		name: meal.name,
+		kcal: num(meal.kcal),
+		carbs: num(meal.carbs),
+		protein: num(meal.protein),
+		fat: num(meal.fat)
+		});
+	}
+
+	return acc;
+  }, []).slice(0, 6);
   function save() {
     if (!form.name.trim()) return;
     onAdd({ name: form.name, kcal:num(form.kcal), carbs:num(form.carbs), protein:num(form.protein), fat:num(form.fat), source: photoName ? 'manuale-da-foto' : 'manuale' });
@@ -73,6 +92,81 @@ export default function Meals({
         </div>
       )}
     </section>
+	<section className="card">
+		<div className="section-title-row">
+		<div>
+			<p className="eyebrow">Recenti</p>
+			<h2>Pasti recenti</h2>
+		</div>
+
+		<button
+			className="mini-link-button"
+			onClick={() => setShowRecentMeals(!showRecentMeals)}
+		>
+		{showRecentMeals ? (
+			<>
+			Nascondi
+			<ChevronUp size={15} />
+			</>
+			) : (
+			<>
+			Mostra
+			<ChevronDown size={15} />
+			</>
+		)}
+		</button>
+		</div>
+
+	{!showRecentMeals && (
+		<p className="hint recent-collapsed-hint">
+			Mostra gli ultimi pasti usati per aggiungerli velocemente a oggi.
+		</p>
+	)}
+
+	{showRecentMeals && (
+		<>
+		{recentMeals.length === 0 ? (
+			<p className="empty">
+				Nessun pasto recente disponibile. I pasti compariranno qui dopo averli registrati.
+			</p>
+		) : (
+			<div className="recent-meals-list">
+			{recentMeals.map((meal) => (
+				<div className="recent-meal-card" key={meal.key}>
+				<div>
+                <strong>{meal.name}</strong>
+                <p>
+                  {Math.round(num(meal.kcal))} kcal · C{' '}
+                  {Math.round(num(meal.carbs))}g · P{' '}
+                  {Math.round(num(meal.protein))}g · G{' '}
+                  {Math.round(num(meal.fat))}g
+                </p>
+              </div>
+
+              <button
+                className="small"
+                onClick={() =>
+                  onAdd({
+                    name: meal.name,
+                    kcal: num(meal.kcal),
+                    carbs: num(meal.carbs),
+                    protein: num(meal.protein),
+                    fat: num(meal.fat),
+                    source: 'recente'
+                  })
+                }
+                title="Aggiungi a oggi"
+              >
+                <Plus size={15} />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </>
+  )}
+</section>
+
     <section className="card"><h2>Registra un pasto</h2><p className="hint">Versione locale: la foto può essere allegata come riferimento, ma i valori vanno inseriti manualmente. L'AI verrà aggiunta in una fase successiva con backend sicuro.</p>
       <div className="grid2"><input placeholder="Nome pasto" value={form.name} onChange={e=>setForm({...form,name:e.target.value})}/><input type="number" placeholder="Kcal" value={form.kcal} onChange={e=>setForm({...form,kcal:e.target.value})}/><input type="number" placeholder="Carboidrati g" value={form.carbs} onChange={e=>setForm({...form,carbs:e.target.value})}/><input type="number" placeholder="Proteine g" value={form.protein} onChange={e=>setForm({...form,protein:e.target.value})}/><input type="number" placeholder="Grassi g" value={form.fat} onChange={e=>setForm({...form,fat:e.target.value})}/><label className="file-btn">Foto piatto<input hidden type="file" accept="image/*" capture="environment" onChange={e=>setPhotoName(e.target.files?.[0]?.name || '')}/></label></div>
       {photoName && <p className="hint">Foto selezionata: {photoName}</p>}<button onClick={save}>Salva pasto</button></section>
