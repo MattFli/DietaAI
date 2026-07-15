@@ -338,16 +338,18 @@ export default function App() {
 
       <main className="content">
         {tab === 'oggi' && (
-          <Dashboard
-            state={state}
-            totals={totals}
-            burned={burned}
-            todayMeals={todayMeals}
-            todayWorkouts={todayWorkouts}
-            onGoTab={setTab}
-            onWeight={logWeight}
-          />
-        )}
+			<Dashboard
+				state={state}
+				totals={totals}
+				burned={burned}
+				todayMeals={todayMeals}
+				todayWorkouts={todayWorkouts}
+				onGoTab={setTab}
+				onWeight={logWeight}
+				syncStatus={syncStatus}
+				isCloudActive={Boolean(user)}
+			/>
+		)}
 
         {tab === 'pasti' && (
           <Meals
