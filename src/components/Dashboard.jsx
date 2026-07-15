@@ -189,16 +189,16 @@ function SyncBadge({ isCloudActive, syncStatus }) {
         <button
 			className={yesterdayMealsCount > 0 ? "secondary" : "disabled-action"}
 			disabled={yesterdayMealsCount === 0}
-			onClick={onCopyYesterdayMeals}
+			onClick={() => onCopyYesterdayMeals && onCopyYesterdayMeals()}
 			title={
 				yesterdayMealsCount > 0
 				? `Copia ${yesterdayMealsCount} pasto/i da ieri`
 				: "Nessun pasto registrato ieri"
 			}
 		>
-  <ClipboardList size={18} />
-  Copia ieri
-</button>
+			<ClipboardList size={18} />
+			Copia ieri
+		</button>
       </section>
 
       <section className="card">

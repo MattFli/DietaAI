@@ -187,20 +187,33 @@ export default function App() {
   function copyYesterdayMeals() {
 	const yesterday = new Date();
 	yesterday.setDate(yesterday.getDate() - 1);
-	const yesterdayKey = yesterday.toISOString().slice(0, 10);
 
-	const yesterdayMeals = state.meals.filter((meal) => meal.date === yesterdayKey);
+	const year = yesterday.getFullYear();
+	const month = String(yesterday.getMonth() + 1).padStart(2, "0");
+	const day = String(yesterday.getDate()).padStart(2, "0");
+	const yesterdayKey = `${year}-${month}-${day}`;
 
-	if (yesterdayMeals.length === 0) {
-		setNotice('Nessun pasto trovato ieri da copiare.');
+	const mealsToCopy = state.meals.filter((meal) => meal.date === yesterdayKey);
+
+	if (mealsToCopy.length === 0) {
+		setNotice("Nessun pasto trovato ieri da copiare.");
 		return;
 	}
 
-	const copiedMeals = yesterdayMeals.map((meal) => ({
+	const confirmed = confirm(
+		`Ho trovato ${mealsToCopy.length} pasto/i registrato/i ieri.\n\nVuoi copiarli su oggi?`
+	);
+
+	if (!confirmed) {
+		return;
+	}
+
+	const copiedMeals = mealsToCopy.map((meal) => ({
 		...meal,
 		id: uid(),
 		date: todayKey(),
-		source: meal.source ? `${meal.source}-copiato` : 'copiato-da-ieri'
+		time: nowTime(),
+		source: meal.source ? `${meal.source}-copiato` : "copiato-da-ieri"
 	}));
 
 	setState((s) => ({
@@ -209,7 +222,7 @@ export default function App() {
 	}));
 
 	setNotice(`${copiedMeals.length} pasto/i copiato/i da ieri.`);
-	}
+  }
 
   function removeMeal(id) {
     setState((s) => ({
@@ -374,6 +387,7 @@ export default function App() {
 				todayWorkouts={todayWorkouts}
 				onGoTab={setTab}
 				onWeight={logWeight}
+				onCopyYesterdayMeals={copyYesterdayMeals}
 				syncStatus={syncStatus}
 				isCloudActive={Boolean(user)}
 			/>
