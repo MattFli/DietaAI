@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   Home,
-  UtensilsCrossed,
-  Dumbbell,
+  CalendarDays,
   Target,
   FileText,
   UserCircle
@@ -23,6 +22,7 @@ import Goals from './components/Goals.jsx';
 import MealPlan from './components/MealPlan.jsx';
 import AuthBar from './components/AuthBar.jsx';
 import Profile from './components/Profile.jsx';
+import CalendarView from './components/CalendarView.jsx';
 
 import {
   loginWithGoogle,
@@ -32,6 +32,8 @@ import {
   saveCloudState,
   getGoogleRedirectResult
 } from './services/firebaseService.js';
+
+
 
 export function uid() {
   return Math.random().toString(36).slice(2, 10);
@@ -52,9 +54,8 @@ export function num(v, d = 0) {
 
 const tabs = [
   { id: 'oggi', label: 'Oggi', icon: Home },
-  { id: 'pasti', label: 'Pasti', icon: UtensilsCrossed },
-  { id: 'allenamenti', label: 'Sport', icon: Dumbbell },
-  { id: 'obiettivi', label: 'Obiettivi', icon: Target },
+  { id: 'calendario', label: 'Calendario', icon: CalendarDays },
+  { id: 'obiettivi', label: 'Progressi', icon: Target },
   { id: 'piano', label: 'Piano', icon: FileText },
   { id: 'profilo', label: 'Profilo', icon: UserCircle }
 ];
@@ -348,6 +349,15 @@ export default function App() {
 				onWeight={logWeight}
 				syncStatus={syncStatus}
 				isCloudActive={Boolean(user)}
+			/>
+		)}
+		
+		{tab === 'calendario' && (
+			<CalendarView
+				meals={state.meals}
+				workouts={state.workouts}
+				weightLog={state.weightLog}
+				onGoTab={setTab}
 			/>
 		)}
 
