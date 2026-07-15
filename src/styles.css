@@ -914,3 +914,84 @@ button:disabled,
     border-radius: 13px;
   }
 }
+
+/* Favorite meals v1.2.4 */
+
+.favorite-meals-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.favorite-meal-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #ecfdf5;
+  background: #f8fafc;
+  border-radius: 18px;
+  padding: 12px;
+}
+
+.favorite-meal-card strong {
+  display: block;
+  font-size: 14px;
+}
+
+.favorite-meal-card p {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.favorite-meal-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.favorite-meal-actions .small {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 13px;
+}
+
+@media (max-width: 420px) {
+  .favorite-meal-card {
+    grid-template-columns: 1fr;
+  }
+
+  .favorite-meal-actions {
+    justify-content: flex-end;
+  }
+}
+
+/* Favorite star state */
+
+.favorite-star {
+  color: #64748b;
+  background: #f1f5f9;
+  transition: all 0.2s ease;
+}
+
+.favorite-star svg {
+  fill: none;
+  stroke: currentColor;
+}
+
+.favorite-star.active {
+  color: #ca8a04;
+  background: #fef9c3;
+}
+
+.favorite-star.active svg {
+  fill: #facc15;
+  stroke: #ca8a04;
+}
+
+.favorite-star:hover {
+  background: #fef9c3;
+  color: #ca8a04;
+}

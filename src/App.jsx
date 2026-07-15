@@ -184,6 +184,59 @@ export default function App() {
     }));
   }
   
+  function addFavoriteMeal(meal) {
+	const alreadyExists = state.favoriteMeals.some(
+    (favorite) =>
+      favorite.name.toLowerCase().trim() === meal.name.toLowerCase().trim()
+	);
+
+	if (alreadyExists) {
+		setNotice('Questo pasto è già presente nei preferiti.');
+		return;
+	}
+
+	const favoriteMeal = {
+		id: uid(),
+		name: meal.name,
+		kcal: num(meal.kcal),
+		carbs: num(meal.carbs),
+		protein: num(meal.protein),
+		fat: num(meal.fat),
+		source: 'preferito'
+	};
+
+	setState((s) => ({
+		...s,
+		favoriteMeals: [...(s.favoriteMeals || []), favoriteMeal]
+	}));
+
+	setNotice('Pasto aggiunto ai preferiti.');
+	}
+
+	function removeFavoriteMeal(id) {
+		setState((s) => ({
+		...s,
+		favoriteMeals: (s.favoriteMeals || []).filter(
+		(favorite) => favorite.id !== id
+		)
+	}));
+
+	setNotice('Pasto rimosso dai preferiti.');
+	}
+
+  function addMealFromFavorite(favoriteMeal) {
+	addMeal({
+		name: favoriteMeal.name,
+		kcal: num(favoriteMeal.kcal),
+		carbs: num(favoriteMeal.carbs),
+		protein: num(favoriteMeal.protein),
+		fat: num(favoriteMeal.fat),
+		source: 'preferito'
+	});
+
+	setNotice('Pasto preferito aggiunto a oggi.');
+	}
+  
   function copyYesterdayMeals() {
 	const yesterday = new Date();
 	yesterday.setDate(yesterday.getDate() - 1);
@@ -403,12 +456,16 @@ export default function App() {
 		)}
 
         {tab === 'pasti' && (
-          <Meals
-            meals={state.meals}
-            onAdd={addMeal}
-            onRemove={removeMeal}
-          />
-        )}
+		 <Meals
+		  meals={state.meals}
+		  favoriteMeals={state.favoriteMeals || []}
+		  onAdd={addMeal}
+		  onRemove={removeMeal}
+		  onAddFavorite={addFavoriteMeal}
+		  onRemoveFavorite={removeFavoriteMeal}
+		  onAddFromFavorite={addMealFromFavorite}
+		 />
+		)}
 
         {tab === 'allenamenti' && (
           <Workouts
