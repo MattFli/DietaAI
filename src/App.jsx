@@ -477,13 +477,16 @@ export default function App() {
         )}
 
         {tab === 'obiettivi' && (
-          <Goals
-            goals={state.goals}
-            weightLog={state.weightLog}
-            setGoals={setGoals}
-            logWeight={logWeight}
-          />
-        )}
+			<Goals
+			goals={state.goals}
+			weightLog={state.weightLog}
+			meals={state.meals}
+			workouts={state.workouts}
+			setGoals={setGoals}
+			logWeight={logWeight}
+			/>
+		)}
+
 
         {tab === 'piano' && (
           <MealPlan
