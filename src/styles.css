@@ -1196,3 +1196,214 @@ button:disabled,
   margin: 0;
   font-size: 13px;
 }
+
+/* Dark mode v1.2.6 */
+
+.theme-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+  margin-top: 12px;
+}
+
+.theme-option {
+  min-height: 54px;
+  border-radius: 16px;
+  background: #f1f5f9;
+  color: #475569;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.theme-option.active {
+  background: #dcfce7;
+  color: #166534;
+  box-shadow: inset 0 0 0 2px #16a34a;
+}
+
+html.theme-dark {
+  color-scheme: dark;
+}
+
+html.theme-dark body {
+  background: #020617;
+  color: #e5e7eb;
+}
+
+html.theme-dark .app-shell {
+  background: #0f172a;
+  color: #e5e7eb;
+}
+
+html.theme-dark .app-header {
+  background: rgba(15, 23, 42, 0.94);
+  border-bottom-color: #1e293b;
+}
+
+html.theme-dark .card {
+  background: #111827;
+  border-color: #1f2937;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
+}
+
+html.theme-dark h1,
+html.theme-dark h2,
+html.theme-dark h3,
+html.theme-dark strong {
+  color: #f8fafc;
+}
+
+html.theme-dark .hint,
+html.theme-dark .empty,
+html.theme-dark .profile-email,
+html.theme-dark .settings-row p,
+html.theme-dark .calendar-list-row p,
+html.theme-dark .today-timeline-row p,
+html.theme-dark .today-plan-item p,
+html.theme-dark .recent-meal-card p,
+html.theme-dark .favorite-meal-card p,
+html.theme-dark .progress-stat-card p,
+html.theme-dark .progress-calorie-box p {
+  color: #94a3b8;
+}
+
+html.theme-dark input,
+html.theme-dark select,
+html.theme-dark textarea {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+html.theme-dark input::placeholder,
+html.theme-dark textarea::placeholder {
+  color: #64748b;
+}
+
+html.theme-dark .bottom-nav {
+  background: #0f172a;
+  border-top-color: #1e293b;
+  box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.28);
+}
+
+html.theme-dark .bottom-nav button {
+  color: #94a3b8;
+}
+
+html.theme-dark .bottom-nav button.active {
+  background: #14532d;
+  color: #dcfce7;
+}
+
+html.theme-dark .settings-row,
+html.theme-dark .today-macro-card,
+html.theme-dark .calendar-summary-box,
+html.theme-dark .calendar-note,
+html.theme-dark .progress-stat-card,
+html.theme-dark .progress-calorie-box,
+html.theme-dark .favorite-meal-card,
+html.theme-dark .recent-meal-card,
+html.theme-dark .calendar-weight-box,
+html.theme-dark .progress-empty-chart {
+  background: #0f172a;
+  border-color: #1e293b;
+}
+
+html.theme-dark .today-macro-icon,
+html.theme-dark .calendar-summary-icon,
+html.theme-dark .progress-stat-icon,
+html.theme-dark .profile-avatar,
+html.theme-dark .today-timeline-icon,
+html.theme-dark .meals-bg {
+  background: #14532d;
+  color: #dcfce7;
+}
+
+html.theme-dark .workouts-bg {
+  background: #1e3a8a;
+  color: #dbeafe;
+}
+
+html.theme-dark .calendar-day {
+  background: #0f172a;
+  border-color: #1e293b;
+  color: #e5e7eb;
+}
+
+html.theme-dark .calendar-day.today {
+  border-color: #22c55e;
+}
+
+html.theme-dark .calendar-day.selected {
+  background: #16a34a;
+  color: #ffffff;
+}
+
+html.theme-dark .calendar-weekdays span,
+html.theme-dark .calendar-legend,
+html.theme-dark .progress-macro-head span,
+html.theme-dark .progress-stat-card span,
+html.theme-dark .progress-calorie-box span,
+html.theme-dark .today-macro-top p {
+  color: #94a3b8;
+}
+
+html.theme-dark .progress-track,
+html.theme-dark .today-progress {
+  background: #14532d;
+}
+
+html.theme-dark .mini-link-button,
+html.theme-dark .icon-btn,
+html.theme-dark .ghost {
+  background: #1e293b;
+  color: #dcfce7;
+}
+
+html.theme-dark .mini-cloud-badge.local,
+html.theme-dark .sync-pill.local {
+  background: #1e293b;
+  color: #cbd5e1;
+}
+
+html.theme-dark .disabled-action {
+  background: #334155 !important;
+  color: #94a3b8 !important;
+}
+
+html.theme-dark .danger-zone {
+  border-color: #7f1d1d;
+}
+
+html.theme-dark .danger-btn {
+  background: #7f1d1d;
+  color: #fee2e2;
+}
+
+html.theme-dark .theme-option {
+  background: #1e293b;
+  color: #cbd5e1;
+}
+
+html.theme-dark .theme-option.active {
+  background: #14532d;
+  color: #dcfce7;
+  box-shadow: inset 0 0 0 2px #22c55e;
+}
+
+html.theme-dark .notice {
+  background: #14532d;
+  border-color: #166534;
+  color: #dcfce7;
+}
+
+@media (max-width: 420px) {
+  .theme-choice-grid {
+    grid-template-columns: 1fr;
+  }
+}

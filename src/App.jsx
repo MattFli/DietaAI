@@ -153,6 +153,42 @@ export default function App() {
 
     return () => clearTimeout(timer);
   }, [state, user, cloudLoaded]);
+  
+  useEffect(() => {
+  const selectedTheme = state.preferences?.theme || 'auto';
+  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+  function applyTheme() {
+    const shouldUseDark =
+      selectedTheme === 'dark' ||
+      (selectedTheme === 'auto' && mediaQuery.matches);
+
+    document.documentElement.classList.toggle('theme-dark', shouldUseDark);
+    document.documentElement.classList.toggle('theme-light', !shouldUseDark);
+    document.documentElement.setAttribute(
+      'data-theme',
+      shouldUseDark ? 'dark' : 'light'
+    );
+  }
+
+  applyTheme();
+
+  if (selectedTheme === 'auto') {
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', applyTheme);
+
+      return () => {
+        mediaQuery.removeEventListener('change', applyTheme);
+      };
+    }
+
+    mediaQuery.addListener(applyTheme);
+
+    return () => {
+      mediaQuery.removeListener(applyTheme);
+    };
+  }
+}, [state.preferences?.theme]);
 
   const todayMeals = state.meals.filter((m) => m.date === todayKey());
   const todayWorkouts = state.workouts.filter((w) => w.date === todayKey());
@@ -349,6 +385,16 @@ export default function App() {
       setState(defaultState);
     }
   }
+  
+  function setThemePreference(theme) {
+	setState((s) => ({
+		...s,
+		preferences: {
+		...(s.preferences || {}),
+		theme
+		}
+	}));
+	}
 
   async function handleImport(e) {
     const file = e.target.files?.[0];
@@ -497,16 +543,18 @@ export default function App() {
         )}
 		
 		{tab === 'profilo' && (
-		 <Profile
+			<Profile
 			user={user}
 			syncStatus={syncStatus}
+			theme={state.preferences?.theme || 'auto'}
+			onThemeChange={setThemePreference}
 			onLogin={handleLogin}
 			onLogout={handleLogout}
 			onUploadLocal={uploadLocalToCloud}
 			onExport={() => exportBackup(state)}
 			onImport={handleImport}
 			onReset={resetAll}
-		 />
+			/>
 		)}
       </main>
 

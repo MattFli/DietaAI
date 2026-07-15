@@ -9,12 +9,17 @@ import {
   RotateCcw,
   ShieldCheck,
   Database,
-  UserCircle
+  UserCircle,
+  Sun,
+  Moon,
+  Monitor
 } from "lucide-react";
 
 export default function Profile({
   user,
   syncStatus,
+  theme,
+  onThemeChange,
   onLogin,
   onLogout,
   onUploadLocal,
@@ -153,6 +158,43 @@ export default function Profile({
 			
 		</div>
       </section>
+
+	<section className="card profile-section">
+		<h3>Tema</h3>
+
+		<p className="hint">
+			Scegli l'aspetto dell'app. La modalità automatica segue il tema del dispositivo.
+		</p>
+
+		<div className="theme-choice-grid">
+			<button
+				type="button"
+				className={theme === 'light' ? 'theme-option active' : 'theme-option'}
+				onClick={() => onThemeChange('light')}
+			>
+				<Sun size={18} />
+				<span>Chiaro</span>
+			</button>
+
+			<button
+				type="button"
+				className={theme === 'dark' ? 'theme-option active' : 'theme-option'}
+				onClick={() => onThemeChange('dark')}
+			>
+				<Moon size={18} />
+				<span>Scuro</span>
+			</button>
+
+			<button
+				type="button"
+				className={theme === 'auto' ? 'theme-option active' : 'theme-option'}
+				onClick={() => onThemeChange('auto')}
+			>
+				<Monitor size={18} />
+				<span>Auto</span>
+			</button>
+		</div>
+	</section>
 
       <section className="card profile-section">
         <h3>Privacy e sicurezza</h3>

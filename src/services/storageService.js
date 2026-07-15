@@ -5,6 +5,10 @@ export const defaultState = {
   favoriteMeals: [],
   workouts: [],
   weightLog: [],
+  preferences: {
+	theme: 'auto'
+  },
+
   goals: {
     startWeight: '',
     currentWeight: '',
