@@ -5,7 +5,9 @@ export const defaultState = {
   favoriteMeals: [],
   workouts: [],
   weightLog: [],
+  waterLog: [],
   preferences: {
+	waterGoalMl: 2000,
 	theme: 'auto'
   },
 

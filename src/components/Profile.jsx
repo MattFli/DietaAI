@@ -12,14 +12,17 @@ import {
   UserCircle,
   Sun,
   Moon,
-  Monitor
+  Monitor,
+  Droplets
 } from "lucide-react";
 
 export default function Profile({
   user,
   syncStatus,
   theme,
+  waterGoalMl,
   onThemeChange,
+  onWaterGoalChange,
   onLogin,
   onLogout,
   onUploadLocal,
@@ -194,6 +197,32 @@ export default function Profile({
 				<span>Auto</span>
 			</button>
 		</div>
+	</section>
+
+	<section className="card profile-section">
+	  <h3>Obiettivo acqua</h3>
+
+	  <p className="hint">
+		Imposta il tuo obiettivo giornaliero di acqua. Il valore verrà usato nella Dashboard.
+	  </p>
+
+	  <div className="water-goal-row">
+		<div className="water-goal-icon">
+		  <Droplets size={20} />
+		</div>
+
+		<div className="water-goal-input">
+		  <label>Obiettivo giornaliero</label>
+		  <input
+			type="number"
+			min="250"
+			step="250"
+			value={waterGoalMl || 2000}
+			onChange={(e) => onWaterGoalChange(e.target.value)}
+		  />
+		  <span>ml</span>
+		</div>
+	  </div>
 	</section>
 
       <section className="card profile-section">

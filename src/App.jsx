@@ -372,6 +372,54 @@ export default function App() {
       };
     });
   }
+  
+  function addWater(amountMl) {
+  setState((s) => {
+    const today = todayKey();
+    const currentEntry = (s.waterLog || []).find((entry) => entry.date === today);
+    const currentMl = num(currentEntry?.ml);
+    const nextMl = Math.max(0, currentMl + amountMl);
+
+    const rest = (s.waterLog || []).filter((entry) => entry.date !== today);
+
+    return {
+      ...s,
+      waterLog: [
+        ...rest,
+        {
+          date: today,
+          ml: nextMl
+        }
+      ].sort((a, b) => a.date.localeCompare(b.date))
+    };
+  });
+}
+
+function resetTodayWater() {
+  setState((s) => {
+    const today = todayKey();
+    const rest = (s.waterLog || []).filter((entry) => entry.date !== today);
+
+    return {
+      ...s,
+      waterLog: rest
+    };
+  });
+
+  setNotice('Acqua di oggi azzerata.');
+}
+
+function setWaterGoalMl(value) {
+  setState((s) => ({
+    ...s,
+    preferences: {
+      ...(s.preferences || {}),
+      waterGoalMl: num(value, 2000)
+    }
+  }));
+
+  setNotice('Obiettivo acqua aggiornato.');
+}
 
   function updatePlan(plan) {
     setState((s) => ({
@@ -487,6 +535,8 @@ export default function App() {
 				onGoTab={setTab}
 				onWeight={logWeight}
 				onCopyYesterdayMeals={copyYesterdayMeals}
+				onAddWater={addWater}
+				onResetWater={resetTodayWater}
 				syncStatus={syncStatus}
 				isCloudActive={Boolean(user)}
 			/>
@@ -544,16 +594,18 @@ export default function App() {
 		
 		{tab === 'profilo' && (
 			<Profile
-			user={user}
-			syncStatus={syncStatus}
-			theme={state.preferences?.theme || 'auto'}
-			onThemeChange={setThemePreference}
-			onLogin={handleLogin}
-			onLogout={handleLogout}
-			onUploadLocal={uploadLocalToCloud}
-			onExport={() => exportBackup(state)}
-			onImport={handleImport}
-			onReset={resetAll}
+				user={user}
+				syncStatus={syncStatus}
+				theme={state.preferences?.theme || 'auto'}
+				waterGoalMl={state.preferences?.waterGoalMl || 2000}
+				onThemeChange={setThemePreference}
+				onWaterGoalChange={setWaterGoalMl}
+				onLogin={handleLogin}
+				onLogout={handleLogout}
+				onUploadLocal={uploadLocalToCloud}
+				onExport={() => exportBackup(state)}
+				onImport={handleImport}
+				onReset={resetAll}
 			/>
 		)}
       </main>

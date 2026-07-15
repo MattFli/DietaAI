@@ -7,7 +7,8 @@ import {
   ClipboardList,
   Cloud,
   CloudOff,
-  Zap
+  Zap,
+  Droplets
 } from "lucide-react";
 import {
   LineChart,
@@ -85,17 +86,26 @@ function SyncBadge({ isCloudActive, syncStatus }) {
 		onGoTab,
 		onWeight,
 		onCopyYesterdayMeals,
+		onAddWater,
+		onResetWater,
 		syncStatus,
 		isCloudActive
 	}) {
   const [weight, setWeight] = useState(state.goals.currentWeight || "");
 
   const g = state.goals;
+  const waterGoalMl = state.preferences?.waterGoalMl || 2000;
+  const todayWaterEntry = (state.waterLog || []).find(
+	(entry) => entry.date === new Date().toISOString().slice(0, 10)
+	);
+  const todayWaterMl = num(todayWaterEntry?.ml);
+  const waterPct =
+	waterGoalMl > 0 ? Math.min(100, Math.round((todayWaterMl / waterGoalMl) * 100)) : 0;
   const yesterday = new Date();
 	yesterday.setDate(yesterday.getDate() - 1);
-	const yesterdayKey = yesterday.toISOString().slice(0, 10);
+  const yesterdayKey = yesterday.toISOString().slice(0, 10);
 
-	const yesterdayMealsCount = state.meals.filter(
+  const yesterdayMealsCount = state.meals.filter(
 	(meal) => meal.date === yesterdayKey
 	).length;
 	
@@ -237,6 +247,52 @@ function SyncBadge({ isCloudActive, syncStatus }) {
           />
         </div>
       </section>
+	  
+	  <section className="card water-card">
+		<div className="section-title-row">
+			<div>
+				<p className="eyebrow">Idratazione</p>
+				<h3>Acqua di oggi</h3>
+			</div>
+
+				<Droplets size={22} className="water-icon" />
+			</div>
+
+			<div className="water-main">
+			<div>
+				<strong>{(todayWaterMl / 1000).toFixed(2)} L</strong>
+				<p>
+					Obiettivo: {(waterGoalMl / 1000).toFixed(2)} L
+				</p>
+			</div>
+
+			<div className="water-percent">
+				{waterPct}%
+			</div>
+			</div>
+
+		<div className="water-progress">
+			<span style={{ width: `${waterPct}%` }} />
+		</div>
+
+	  <div className="water-actions">
+		<button onClick={() => onAddWater(250)}>
+		  +250 ml
+		</button>
+
+		<button onClick={() => onAddWater(500)}>
+		  +500 ml
+		</button>
+
+		<button className="secondary" onClick={() => onAddWater(-250)}>
+		  -250 ml
+		</button>
+
+		<button className="secondary" onClick={onResetWater}>
+		  Reset
+		</button>
+	  </div>
+	</section>
 
       <section className="card today-weight-card">
         <div>

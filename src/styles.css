@@ -1407,3 +1407,165 @@ html.theme-dark .notice {
     grid-template-columns: 1fr;
   }
 }
+
+/* Water tracking v1.2.7 */
+
+.water-card {
+  background: linear-gradient(135deg, #ffffff, #eff6ff);
+}
+
+.water-icon {
+  color: #2563eb;
+}
+
+.water-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.water-main strong {
+  display: block;
+  font-size: 34px;
+  line-height: 1;
+  color: #1d4ed8;
+  letter-spacing: -0.04em;
+}
+
+.water-main p {
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.water-percent {
+  min-width: 58px;
+  height: 58px;
+  border-radius: 20px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+}
+
+.water-progress {
+  height: 10px;
+  background: #dbeafe;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 14px;
+}
+
+.water-progress span {
+  display: block;
+  height: 100%;
+  background: #2563eb;
+  border-radius: 999px;
+}
+
+.water-actions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.water-actions button {
+  min-height: 42px;
+  border-radius: 14px;
+  font-size: 12px;
+  padding: 8px 6px;
+}
+
+.water-goal-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid #ecfdf5;
+  background: #f8fafc;
+  border-radius: 18px;
+  padding: 12px;
+  margin-top: 12px;
+}
+
+.water-goal-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 15px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.water-goal-input {
+  display: grid;
+  grid-template-columns: 1fr 64px 28px;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.water-goal-input label {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.water-goal-input input {
+  text-align: right;
+}
+
+.water-goal-input span {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+/* Dark mode water */
+
+html.theme-dark .water-card {
+  background: linear-gradient(135deg, #111827, #0f172a);
+}
+
+html.theme-dark .water-main strong {
+  color: #93c5fd;
+}
+
+html.theme-dark .water-percent,
+html.theme-dark .water-progress {
+  background: #1e3a8a;
+  color: #dbeafe;
+}
+
+html.theme-dark .water-progress span {
+  background: #60a5fa;
+}
+
+html.theme-dark .water-goal-row {
+  background: #0f172a;
+  border-color: #1e293b;
+}
+
+html.theme-dark .water-goal-icon {
+  background: #1e3a8a;
+  color: #dbeafe;
+}
+
+@media (max-width: 420px) {
+  .water-actions {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .water-goal-input {
+    grid-template-columns: 1fr;
+  }
+
+  .water-goal-input input {
+    text-align: left;
+  }
+}
