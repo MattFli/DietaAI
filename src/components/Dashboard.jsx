@@ -76,20 +76,29 @@ function SyncBadge({ isCloudActive, syncStatus }) {
   );
 }
 
-export default function Dashboard({
-  state,
-  totals,
-  burned,
-  todayMeals,
-  todayWorkouts,
-  onGoTab,
-  onWeight,
-  syncStatus,
-  isCloudActive
-}) {
+	export default function Dashboard({
+		state,
+		totals,
+		burned,
+		todayMeals,
+		todayWorkouts,
+		onGoTab,
+		onWeight,
+		onCopyYesterdayMeals,
+		syncStatus,
+		isCloudActive
+	}) {
   const [weight, setWeight] = useState(state.goals.currentWeight || "");
 
   const g = state.goals;
+  const yesterday = new Date();
+	yesterday.setDate(yesterday.getDate() - 1);
+	const yesterdayKey = yesterday.toISOString().slice(0, 10);
+
+	const yesterdayMealsCount = state.meals.filter(
+	(meal) => meal.date === yesterdayKey
+	).length;
+	
   const dailyKcal = num(g.dailyKcal, 2000);
   const net = totals.kcal - burned;
   const remaining = Math.round(dailyKcal - net);
@@ -177,10 +186,19 @@ export default function Dashboard({
           Peso
         </button>
 
-        <button className="disabled-action" disabled>
-          <ClipboardList size={18} />
-          Copia ieri
-        </button>
+        <button
+			className={yesterdayMealsCount > 0 ? "secondary" : "disabled-action"}
+			disabled={yesterdayMealsCount === 0}
+			onClick={onCopyYesterdayMeals}
+			title={
+				yesterdayMealsCount > 0
+				? `Copia ${yesterdayMealsCount} pasto/i da ieri`
+				: "Nessun pasto registrato ieri"
+			}
+		>
+  <ClipboardList size={18} />
+  Copia ieri
+</button>
       </section>
 
       <section className="card">

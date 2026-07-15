@@ -183,6 +183,33 @@ export default function App() {
       ]
     }));
   }
+  
+  function copyYesterdayMeals() {
+	const yesterday = new Date();
+	yesterday.setDate(yesterday.getDate() - 1);
+	const yesterdayKey = yesterday.toISOString().slice(0, 10);
+
+	const yesterdayMeals = state.meals.filter((meal) => meal.date === yesterdayKey);
+
+	if (yesterdayMeals.length === 0) {
+		setNotice('Nessun pasto trovato ieri da copiare.');
+		return;
+	}
+
+	const copiedMeals = yesterdayMeals.map((meal) => ({
+		...meal,
+		id: uid(),
+		date: todayKey(),
+		source: meal.source ? `${meal.source}-copiato` : 'copiato-da-ieri'
+	}));
+
+	setState((s) => ({
+		...s,
+		meals: [...s.meals, ...copiedMeals]
+	}));
+
+	setNotice(`${copiedMeals.length} pasto/i copiato/i da ieri.`);
+	}
 
   function removeMeal(id) {
     setState((s) => ({
