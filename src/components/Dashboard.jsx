@@ -117,6 +117,56 @@ function SyncBadge({ isCloudActive, syncStatus }) {
     waterStatusText = "Puoi bere ancora";
     waterStatusClass = "warning";
   }
+  const todayDate = new Date().toISOString().slice(0, 10);
+
+  const hasMealsToday = todayMeals.length > 0;
+  const hasWorkoutToday = todayWorkouts.length > 0;
+
+  const hasWeightToday = (state.weightLog || []).some(
+    (entry) => entry.date === todayDate
+  );
+
+  const planMeals = state.mealPlan?.meals || [];
+  const planCompletions = state.mealPlan?.completions || [];
+
+  const completedPlanMeals = planCompletions.filter(
+    (entry) =>
+      entry.date === todayDate &&
+      entry.status === "done"
+  ).length;
+
+  const planPct =
+    planMeals.length > 0
+      ? completedPlanMeals / planMeals.length
+      : 0;
+
+  const mealScore = hasMealsToday ? 20 : 0;
+  const waterScore = Math.round((waterPct / 100) * 20);
+  const weightScore = hasWeightToday ? 10 : 0;
+  const workoutScore = hasWorkoutToday ? 20 : 0;
+  const planScore = Math.round(planPct * 30);
+
+  const dailyScore =
+    mealScore +
+    waterScore +
+    weightScore +
+    workoutScore +
+    planScore;
+  
+  let scoreLabel = "Da migliorare";
+  let scoreClass = "bad";
+
+  if (dailyScore >= 90) {
+    scoreLabel = "Ottimo";
+    scoreClass = "excellent";
+  } else if (dailyScore >= 70) {
+    scoreLabel = "Buono";
+    scoreClass = "good";
+  } else if (dailyScore >= 40) {
+    scoreLabel = "Sufficiente";
+    scoreClass = "medium";
+  }
+  
   const yesterday = new Date();
 	yesterday.setDate(yesterday.getDate() - 1);
   const yesterdayKey = yesterday.toISOString().slice(0, 10);
@@ -319,6 +369,51 @@ function SyncBadge({ isCloudActive, syncStatus }) {
 		  Reset
 		</button>
 	  </div>
+	</section>
+	
+	<section className="card score-card">
+		<div className="section-title-row">
+			<div>
+			  <p className="eyebrow">Score</p>
+			  <h3>Giornata di oggi</h3>
+			</div>
+
+			<span className={`score-badge ${scoreClass}`}>
+			  {scoreLabel}
+			</span>
+		  </div>
+
+		  <div className="score-main">
+			<strong>{dailyScore}</strong>
+			<span>/ 100</span>
+		  </div>
+
+		  <div className="score-breakdown">
+			<div>
+			  <span>🍽️ Pasti</span>
+			  <strong>{mealScore}/20</strong>
+			</div>
+
+			<div>
+			  <span>💧 Acqua</span>
+			  <strong>{waterScore}/20</strong>
+			</div>
+
+			<div>
+			  <span>⚖️ Peso</span>
+			  <strong>{weightScore}/10</strong>
+			</div>
+
+			<div>
+			  <span>🏋️ Sport</span>
+			  <strong>{workoutScore}/20</strong>
+			</div>
+
+			<div>
+			  <span>📋 Piano</span>
+			  <strong>{planScore}/30</strong>
+			</div>
+		</div>
 	</section>
 
       <section className="card today-weight-card">

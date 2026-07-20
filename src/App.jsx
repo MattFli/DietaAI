@@ -714,9 +714,10 @@ function setWaterGoalMl(value) {
 			  workouts={state.workouts}
 			  weightLog={state.weightLog}
 			  waterLog={state.waterLog || []}
+			  mealPlan={state.mealPlan}
 			  onGoTab={setTab}
 			  onCopyMealsFromDate={copyMealsFromDate}
-		  />
+			/>
 		)}
 
         {tab === 'pasti' && (
@@ -745,12 +746,14 @@ function setWaterGoalMl(value) {
         )}
 
         {tab === 'obiettivi' && (
-			<Goals
+		  <Goals
 			  goals={state.goals}
 			  weightLog={state.weightLog}
 			  meals={state.meals}
 			  workouts={state.workouts}
 			  waterLog={state.waterLog || []}
+			  mealPlan={state.mealPlan}
+			  waterGoalMl={state.preferences?.waterGoalMl || 2000}
 			  setGoals={setGoals}
 			  logWeight={logWeight}
 			/>

@@ -70,6 +70,55 @@ function DayIndicators({
   );
 }
 
+function calculateDayScore(
+  dateKey,
+  meals,
+  workouts,
+  weightLog,
+  waterLog,
+  mealPlan
+) {
+  const hasMeals =
+    meals.filter((m) => m.date === dateKey).length > 0;
+
+  const hasWorkout =
+    workouts.filter((w) => w.date === dateKey).length > 0;
+
+  const hasWeight =
+    weightLog.some((w) => w.date === dateKey);
+
+  const waterEntry =
+    waterLog.find((w) => w.date === dateKey);
+
+  const waterGoal = 2000;
+  const waterPct = Math.min(
+    1,
+    (num(waterEntry?.ml) || 0) / waterGoal
+  );
+
+  const planMeals = mealPlan?.meals || [];
+
+  const donePlanMeals =
+    (mealPlan?.completions || []).filter(
+      (c) =>
+        c.date === dateKey &&
+        c.status === "done"
+    ).length;
+
+  const planPct =
+    planMeals.length > 0
+      ? donePlanMeals / planMeals.length
+      : 0;
+
+  return (
+    (hasMeals ? 20 : 0) +
+    Math.round(waterPct * 20) +
+    (hasWeight ? 10 : 0) +
+    (hasWorkout ? 20 : 0) +
+    Math.round(planPct * 30)
+  );
+}
+
 function SummaryBox({ icon, label, value }) {
   return (
     <div className="calendar-summary-box">
@@ -85,6 +134,7 @@ export default function CalendarView({
   workouts,
   weightLog,
   waterLog,
+  mealPlan,
   onGoTab,
   onCopyMealsFromDate
 }) {
@@ -187,15 +237,37 @@ export default function CalendarView({
 			const hasWater = waterLog.some(
 				(entry) => entry.date === dateKey && num(entry.ml) > 0
 			);
+			
+			const dayScore = calculateDayScore(
+			  dateKey,
+			  meals,
+			  workouts,
+			  weightLog,
+			  waterLog,
+			  mealPlan
+			);
+
+			let scoreClass = "";
+
+			if (dayScore >= 90) {
+			  scoreClass = "score-excellent";
+			} else if (dayScore >= 70) {
+			  scoreClass = "score-good";
+			} else if (dayScore >= 40) {
+			  scoreClass = "score-medium";
+			} else {
+			  scoreClass = "score-bad";
+			}
 
             return (
               <button
                 key={dateKey}
                 className={[
-                  "calendar-day",
-                  isToday ? "today" : "",
-                  isSelected ? "selected" : ""
-                ].join(" ")}
+				  "calendar-day",
+				  scoreClass,
+				  isToday ? "today" : "",
+				  isSelected ? "selected" : ""
+				].join(" ")}
                 onClick={() => setSelectedDate(dateKey)}
               >
                 <span>{day.getDate()}</span>

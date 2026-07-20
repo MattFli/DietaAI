@@ -78,6 +78,8 @@ export default function Goals({
   meals,
   workouts,
   waterLog,
+  mealPlan,
+  waterGoalMl,
   setGoals,
   logWeight
 }) {
@@ -88,7 +90,92 @@ export default function Goals({
   }, [goals]);
 
   const last7Days = useMemo(() => getLastDays(7), []);
-  const waterGoalMl = goals?.waterGoalMl || 2000;
+  
+  function calculateDayScore(dateKey) {
+  const hasMeals = meals.some((meal) => meal.date === dateKey);
+
+  const hasWorkout = workouts.some((workout) => workout.date === dateKey);
+
+  const hasWeight = weightLog.some((entry) => entry.date === dateKey);
+
+  const waterEntry = waterLog.find((entry) => entry.date === dateKey);
+
+  const waterGoal = num(waterGoalMl, 2000);
+
+  const waterPct =
+    waterGoal > 0
+      ? Math.min(1, num(waterEntry?.ml) / waterGoal)
+      : 0;
+
+  const planMeals = mealPlan?.meals || [];
+
+  const completedPlanMeals = (mealPlan?.completions || []).filter(
+    (entry) =>
+      entry.date === dateKey &&
+      entry.status === "done"
+  ).length;
+
+  const planPct =
+    planMeals.length > 0
+      ? completedPlanMeals / planMeals.length
+      : 0;
+
+  const mealScore = hasMeals ? 20 : 0;
+  const waterScore = Math.round(waterPct * 20);
+  const weightScore = hasWeight ? 10 : 0;
+  const workoutScore = hasWorkout ? 20 : 0;
+  const planScore = Math.round(planPct * 30);
+
+  return mealScore + waterScore + weightScore + workoutScore + planScore;
+  }
+
+  const weekScores = last7Days.map((date) => ({
+    date,
+    score: calculateDayScore(date)
+  }));
+
+  const averageScore =
+    weekScores.length > 0
+      ? Math.round(
+          weekScores.reduce((sum, item) => sum + item.score, 0) /
+            weekScores.length
+        )
+      : 0;
+
+  const bestScore =
+    weekScores.length > 0
+      ? Math.max(...weekScores.map((item) => item.score))
+      : 0;
+
+  let scoreTrend = "Da migliorare";
+
+  if (averageScore >= 90) {
+    scoreTrend = "Ottimo";
+  } else if (averageScore >= 70) {
+    scoreTrend = "Buono";
+  } else if (averageScore >= 40) {
+    scoreTrend = "Sufficiente";
+  }
+
+  function calculateScoreStreak() {
+    let streak = 0;
+
+    for (let i = last7Days.length - 1; i >= 0; i--) {
+      const dayScore = calculateDayScore(last7Days[i]);
+
+      if (dayScore >= 80) {
+        streak += 1;
+      } else {
+        break;
+      }
+    }
+
+    return streak;
+  }
+
+  const scoreStreak = calculateScoreStreak();
+  
+  const effectiveWaterGoalMl = num(waterGoalMl, 2000);
 
   const last7WaterDays = waterLog.filter(
     (entry) => last7Days.includes(entry.date)
@@ -105,8 +192,9 @@ export default function Goals({
       : 0;
 
   const waterDaysReached = last7WaterDays.filter(
-    (entry) => num(entry.ml) >= 2000
+	(entry) => num(entry.ml) >= effectiveWaterGoalMl
   ).length;
+
 
   const bestWaterDay =
     Math.max(...last7WaterDays.map((w) => num(w.ml)), 0);
@@ -247,6 +335,46 @@ export default function Goals({
           />
         </div>
       </section>
+
+	  <section className="card">
+        <div className="section-title-row">
+		<div>
+		  <p className="eyebrow">Score</p>
+		  <h3>Andamento personale</h3>
+		</div>
+	  </div>
+
+	  <div className="progress-stats-grid">
+		<ProgressStat
+		  icon={"🎯"}
+		  label="Media"
+		  value={`${averageScore}%`}
+		  helper="Ultimi 7 giorni"
+		/>
+
+		<ProgressStat
+		  icon={"🏆"}
+		  label="Best"
+		  value={`${bestScore}%`}
+		  helper="Miglior giorno"
+		/>
+
+		<ProgressStat
+		  icon={"🔥"}
+		  label="Streak"
+		  value={`${scoreStreak} gg`}
+		  helper="Score ≥ 80"
+		/>
+	  </div>
+
+	  <div className="progress-calorie-box score-summary-box">
+		<span>Valutazione complessiva</span>
+		<strong>{scoreTrend}</strong>
+		<p>
+		  Lo score tiene conto di pasti, acqua, peso, allenamenti e piano alimentare.
+		</p>
+	  </div>
+	</section>
 
       <section className="card">
   <div className="section-title-row">
