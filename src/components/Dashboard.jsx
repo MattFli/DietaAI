@@ -127,6 +127,13 @@ function SyncBadge({ isCloudActive, syncStatus }) {
   }));
 
   const plannedMeals = state.mealPlan?.meals || [];
+  const todayPlanCompletions = state.mealPlan?.completions || [];
+
+  function getTodayPlanStatus(mealId) {
+    return todayPlanCompletions.find(
+      (entry) => entry.date === new Date().toISOString().slice(0, 10) && entry.mealId === mealId
+    );
+  }
 
   const timeline = [
     ...todayMeals.map((m) => ({ ...m, kind: "meal" })),
@@ -369,18 +376,35 @@ function SyncBadge({ isCloudActive, syncStatus }) {
           </p>
         ) : (
           <div className="today-plan-list">
-            {plannedMeals.slice(0, 4).map((meal) => (
-              <div className="today-plan-item" key={meal.id}>
-                <div>
-                  <strong>{meal.name}</strong>
-                  <p>
-                    {meal.time || "Orario non indicato"} · {meal.kcal} kcal
-                  </p>
-                </div>
+            {plannedMeals.slice(0, 4).map((meal) => {
+			  const status = getTodayPlanStatus(meal.id);
 
-                <span>⏳</span>
-              </div>
-            ))}
+			  let icon = "⏳";
+			  let label = "Da fare";
+
+			  if (status?.status === "done") {
+				icon = "✅";
+				label = "Completato";
+			  }
+
+			  if (status?.status === "skipped") {
+				icon = "⏭️";
+				label = "Saltato";
+			  }
+
+			  return (
+				<div className="today-plan-item" key={meal.id}>
+				  <div>
+					<strong>{meal.name}</strong>
+					<p>
+					  {meal.time || "Orario non indicato"} · {meal.kcal} kcal · {label}
+					</p>
+				  </div>
+
+				  <span>{icon}</span>
+				</div>
+			  );
+			})}
           </div>
         )}
       </section>

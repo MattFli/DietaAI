@@ -499,6 +499,100 @@ function setWaterGoalMl(value) {
       mealPlan: plan
     }));
   }
+  
+  function completePlanMeal(planMeal) {
+	  const today = todayKey();
+
+	  setState((s) => {
+		const mealId = uid();
+
+		const newMeal = {
+		  id: mealId,
+		  date: today,
+		  time: nowTime(),
+		  name: planMeal.name,
+		  kcal: num(planMeal.kcal),
+		  carbs: num(planMeal.carbs),
+		  protein: num(planMeal.protein),
+		  fat: num(planMeal.fat),
+		  source: 'piano',
+		  planMealId: planMeal.id
+		};
+
+		const currentCompletions = s.mealPlan?.completions || [];
+
+		const filteredCompletions = currentCompletions.filter(
+		  (entry) => !(entry.date === today && entry.mealId === planMeal.id)
+		);
+
+		const newCompletion = {
+		  id: uid(),
+		  mealId: planMeal.id,
+		  date: today,
+		  status: 'done',
+		  linkedMealId: mealId,
+		  updatedAt: new Date().toISOString()
+		};
+
+		return {
+		  ...s,
+		  meals: [...s.meals, newMeal],
+		  mealPlan: {
+			...(s.mealPlan || {}),
+			completions: [...filteredCompletions, newCompletion]
+		  }
+		};
+	  });
+
+	  setNotice('Pasto del piano segnato come mangiato.');
+	}
+
+	function skipPlanMeal(planMeal) {
+	  const today = todayKey();
+
+	  setState((s) => {
+		const currentCompletions = s.mealPlan?.completions || [];
+
+		const filteredCompletions = currentCompletions.filter(
+		  (entry) => !(entry.date === today && entry.mealId === planMeal.id)
+		);
+
+		const newCompletion = {
+		  id: uid(),
+		  mealId: planMeal.id,
+		  date: today,
+		  status: 'skipped',
+		  linkedMealId: null,
+		  updatedAt: new Date().toISOString()
+		};
+
+		return {
+		  ...s,
+		  mealPlan: {
+			...(s.mealPlan || {}),
+			completions: [...filteredCompletions, newCompletion]
+		  }
+		};
+	  });
+
+	  setNotice('Pasto del piano segnato come saltato.');
+	}
+
+	function resetPlanMealStatus(planMealId) {
+	  const today = todayKey();
+
+	  setState((s) => ({
+		...s,
+		mealPlan: {
+		  ...(s.mealPlan || {}),
+		  completions: (s.mealPlan?.completions || []).filter(
+			(entry) => !(entry.date === today && entry.mealId === planMealId)
+		  )
+		}
+	  }));
+
+	  setNotice('Stato del pasto ripristinato.');
+	}
 
   function resetAll() {
     if (confirm('Vuoi davvero cancellare tutti i dati salvati in locale?')) {
@@ -662,12 +756,14 @@ function setWaterGoalMl(value) {
 
 
         {tab === 'piano' && (
-          <MealPlan
-            mealPlan={state.mealPlan}
-            updatePlan={updatePlan}
-            onLogMeal={addMeal}
-          />
-        )}
+		  <MealPlan
+			mealPlan={state.mealPlan}
+			updatePlan={updatePlan}
+			onCompletePlanMeal={completePlanMeal}
+			onSkipPlanMeal={skipPlanMeal}
+			onResetPlanMealStatus={resetPlanMealStatus}
+		  />
+		)}
 		
 		{tab === 'profilo' && (
 			<Profile

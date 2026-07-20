@@ -26,7 +26,8 @@ export const defaultState = {
     pdfName: '',
     dailyKcalTarget: '',
     notes: '',
-    meals: []
+    meals: [],
+	completions: []
   }
 };
 
