@@ -3,6 +3,7 @@ const STORAGE_KEY = 'dieta-ai-locale-v1';
 export const defaultState = {
   meals: [],
   favoriteMeals: [],
+  recipes: [],
   workouts: [],
   weightLog: [],
   waterLog: [],

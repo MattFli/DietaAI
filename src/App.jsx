@@ -248,6 +248,50 @@ export default function App() {
 
 	setNotice('Pasto aggiunto ai preferiti.');
 	}
+	
+	function addRecipe(recipe) {
+	  const recipeToSave = {
+		id: uid(),
+		name: recipe.name,
+		description: recipe.description || '',
+		kcal: num(recipe.kcal),
+		carbs: num(recipe.carbs),
+		protein: num(recipe.protein),
+		fat: num(recipe.fat),
+		servings: num(recipe.servings, 1),
+		createdAt: new Date().toISOString()
+	  };
+
+	  setState((s) => ({
+		...s,
+		recipes: [...(s.recipes || []), recipeToSave]
+	  }));
+
+	  setNotice('Ricetta aggiunta correttamente.');
+	}
+
+	function removeRecipe(id) {
+	  setState((s) => ({
+		...s,
+		recipes: (s.recipes || []).filter((recipe) => recipe.id !== id)
+	  }));
+
+	  setNotice('Ricetta rimossa.');
+	}
+
+	function addMealFromRecipe(recipe) {
+	  addMeal({
+		name: recipe.name,
+		kcal: num(recipe.kcal),
+		carbs: num(recipe.carbs),
+		protein: num(recipe.protein),
+		fat: num(recipe.fat),
+		source: 'ricetta'
+	  });
+
+	  setNotice('Ricetta aggiunta ai pasti di oggi.');
+	}
+
 
 	function removeFavoriteMeal(id) {
 		setState((s) => ({
@@ -552,15 +596,19 @@ function setWaterGoalMl(value) {
 		)}
 
         {tab === 'pasti' && (
-		 <Meals
-		  meals={state.meals}
-		  favoriteMeals={state.favoriteMeals || []}
-		  onAdd={addMeal}
-		  onRemove={removeMeal}
-		  onAddFavorite={addFavoriteMeal}
-		  onRemoveFavorite={removeFavoriteMeal}
-		  onAddFromFavorite={addMealFromFavorite}
-		 />
+		  <Meals
+			meals={state.meals}
+			favoriteMeals={state.favoriteMeals || []}
+			recipes={state.recipes || []}
+			onAdd={addMeal}
+			onRemove={removeMeal}
+			onAddFavorite={addFavoriteMeal}
+			onRemoveFavorite={removeFavoriteMeal}
+			onAddFromFavorite={addMealFromFavorite}
+			onAddRecipe={addRecipe}
+			onRemoveRecipe={removeRecipe}
+			onAddFromRecipe={addMealFromRecipe}
+		  />
 		)}
 
         {tab === 'allenamenti' && (

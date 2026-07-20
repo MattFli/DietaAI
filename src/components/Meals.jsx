@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
-import { Trash2, Star, Plus, Clock3, ChevronDown, ChevronUp } from 'lucide-react';
+import {
+  Trash2,
+  Star,
+  Plus,
+  Clock3,
+  ChevronDown,
+  ChevronUp,
+  ChefHat,
+  Save
+} from 'lucide-react';
 import { num } from '../App.jsx';
+
 
 function fmtDate(d) { return new Date(d + 'T00:00:00').toLocaleDateString('it-IT', { weekday:'short', day:'numeric', month:'short' }); }
 const emptyForm = { name:'', kcal:'', carbs:'', protein:'', fat:'' };
@@ -8,15 +18,29 @@ const emptyForm = { name:'', kcal:'', carbs:'', protein:'', fat:'' };
 export default function Meals({
   meals,
   favoriteMeals,
+  recipes,
   onAdd,
   onRemove,
   onAddFavorite,
   onRemoveFavorite,
-  onAddFromFavorite
+  onAddFromFavorite,
+  onAddRecipe,
+  onRemoveRecipe,
+  onAddFromRecipe
 }) {
   const [form, setForm] = useState(emptyForm);
   const [photoName, setPhotoName] = useState('');
   const [showRecentMeals, setShowRecentMeals] = useState(false);
+  const [showRecipes, setShowRecipes] = useState(false);
+	const [recipeForm, setRecipeForm] = useState({
+	  name: '',
+	  description: '',
+	  kcal: '',
+	  carbs: '',
+	  protein: '',
+	  fat: '',
+	  servings: 1
+	});
   const sorted = [...meals].sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time));
   const grouped = sorted.reduce((acc,m)=>{(acc[m.date]=acc[m.date]||[]).push(m);return acc;},{});
   const recentMeals = sorted.reduce((acc, meal) => {
@@ -42,6 +66,33 @@ export default function Meals({
     onAdd({ name: form.name, kcal:num(form.kcal), carbs:num(form.carbs), protein:num(form.protein), fat:num(form.fat), source: photoName ? 'manuale-da-foto' : 'manuale' });
     setForm(emptyForm); setPhotoName('');
   }
+  
+  function saveRecipe() {
+	  if (!recipeForm.name.trim()) {
+		return;
+	  }
+
+	  onAddRecipe({
+		name: recipeForm.name,
+		description: recipeForm.description,
+		kcal: num(recipeForm.kcal),
+		carbs: num(recipeForm.carbs),
+		protein: num(recipeForm.protein),
+		fat: num(recipeForm.fat),
+		servings: num(recipeForm.servings, 1)
+	  });
+
+	  setRecipeForm({
+		name: '',
+		description: '',
+		kcal: '',
+		carbs: '',
+		protein: '',
+		fat: '',
+		servings: 1
+	  });
+	}
+  
   return <>
 	<section className="card">
       <div className="section-title-row">
@@ -159,6 +210,168 @@ export default function Meals({
               >
                 <Plus size={15} />
               </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </>
+  )}
+</section>
+
+<section className="card">
+  <div className="section-title-row">
+    <div>
+      <p className="eyebrow">Ricette</p>
+      <h2>Ricette personali</h2>
+    </div>
+
+    <button
+      className="mini-link-button"
+      onClick={() => setShowRecipes(!showRecipes)}
+    >
+      {showRecipes ? (
+        <>
+          Nascondi
+          <ChevronUp size={15} />
+        </>
+      ) : (
+        <>
+          Mostra
+          <ChevronDown size={15} />
+        </>
+      )}
+    </button>
+  </div>
+
+  {!showRecipes && (
+    <p className="hint recent-collapsed-hint">
+      Salva preparazioni ricorrenti e aggiungile velocemente ai pasti di oggi.
+    </p>
+  )}
+
+  {showRecipes && (
+    <>
+      <div className="recipe-form-box">
+        <div className="section-title-row">
+          <div>
+            <p className="eyebrow">Nuova ricetta</p>
+            <h3>Aggiungi ricetta</h3>
+          </div>
+
+          <ChefHat size={20} className="success-color" />
+        </div>
+
+        <div className="grid2">
+          <input
+            placeholder="Nome ricetta"
+            value={recipeForm.name}
+            onChange={(e) =>
+              setRecipeForm({ ...recipeForm, name: e.target.value })
+            }
+          />
+
+          <input
+            type="number"
+            placeholder="Porzioni"
+            value={recipeForm.servings}
+            onChange={(e) =>
+              setRecipeForm({ ...recipeForm, servings: e.target.value })
+            }
+          />
+
+          <textarea
+            placeholder="Descrizione o ingredienti"
+            value={recipeForm.description}
+            onChange={(e) =>
+              setRecipeForm({ ...recipeForm, description: e.target.value })
+            }
+          />
+
+          <input
+            type="number"
+            placeholder="Kcal per porzione"
+            value={recipeForm.kcal}
+            onChange={(e) =>
+              setRecipeForm({ ...recipeForm, kcal: e.target.value })
+            }
+          />
+
+          <input
+            type="number"
+            placeholder="Carboidrati g"
+            value={recipeForm.carbs}
+            onChange={(e) =>
+              setRecipeForm({ ...recipeForm, carbs: e.target.value })
+            }
+          />
+
+          <input
+            type="number"
+            placeholder="Proteine g"
+            value={recipeForm.protein}
+            onChange={(e) =>
+              setRecipeForm({ ...recipeForm, protein: e.target.value })
+            }
+          />
+
+          <input
+            type="number"
+            placeholder="Grassi g"
+            value={recipeForm.fat}
+            onChange={(e) =>
+              setRecipeForm({ ...recipeForm, fat: e.target.value })
+            }
+          />
+        </div>
+
+        <button className="profile-action" onClick={saveRecipe}>
+          <Save size={18} />
+          Salva ricetta
+        </button>
+      </div>
+
+      {recipes.length === 0 ? (
+        <p className="empty">
+          Nessuna ricetta salvata. Crea la tua prima ricetta personale.
+        </p>
+      ) : (
+        <div className="recipes-list">
+          {recipes.map((recipe) => (
+            <div className="recipe-card" key={recipe.id}>
+              <div>
+                <strong>{recipe.name}</strong>
+
+                {recipe.description && (
+                  <p className="recipe-description">
+                    {recipe.description}
+                  </p>
+                )}
+
+                <p>
+                  {Math.round(num(recipe.kcal))} kcal · C{" "}
+                  {Math.round(num(recipe.carbs))}g · P{" "}
+                  {Math.round(num(recipe.protein))}g · G{" "}
+                  {Math.round(num(recipe.fat))}g
+                </p>
+              </div>
+
+              <div className="recipe-actions">
+                <button
+                  className="small"
+                  onClick={() => onAddFromRecipe(recipe)}
+                  title="Aggiungi a oggi"
+                >
+                  <Plus size={15} />
+                </button>
+
+                <button
+                  className="ghost danger"
+                  onClick={() => onRemoveRecipe(recipe.id)}
+                  title="Elimina ricetta"
+                >
+                  <Trash2 size={15} />
+                </button>
+              </div>
             </div>
           ))}
         </div>
