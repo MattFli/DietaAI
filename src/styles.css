@@ -1569,3 +1569,14 @@ html.theme-dark .water-goal-icon {
     text-align: left;
   }
 }
+
+/* Smart copy v1.2.9 */
+
+.calendar-day-actions.single-action {
+  grid-template-columns: 1fr;
+}
+
+.calendar-day-actions.single-action button {
+  flex-direction: row;
+  min-height: 46px;
+}

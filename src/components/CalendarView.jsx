@@ -6,7 +6,8 @@ import {
   Dumbbell,
   Scale,
   Plus,
-  CalendarDays
+  CalendarDays,
+  ClipboardList
 } from "lucide-react";
 import { num, todayKey } from "../App.jsx";
 
@@ -77,10 +78,12 @@ export default function CalendarView({
   meals,
   workouts,
   weightLog,
-  onGoTab
+  onGoTab,
+  onCopyMealsFromDate
 }) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(todayKey());
+  const isPastDay = selectedDate < todayKey();
 
   const monthDays = useMemo(
     () => buildMonthDays(currentMonth),
@@ -235,27 +238,39 @@ export default function CalendarView({
         </div>
 
         {isSelectedToday ? (
-          <div className="calendar-day-actions">
-            <button onClick={() => onGoTab("pasti")}>
-              <Plus size={17} />
-              Aggiungi pasto
-            </button>
+		  <div className="calendar-day-actions">
+			<button onClick={() => onGoTab("pasti")}>
+			  <Plus size={17} />
+			  Aggiungi pasto
+			</button>
 
-            <button className="secondary" onClick={() => onGoTab("allenamenti")}>
-              <Plus size={17} />
-              Aggiungi sport
-            </button>
+			<button className="secondary" onClick={() => onGoTab("allenamenti")}>
+			  <Plus size={17} />
+			  Aggiungi sport
+			</button>
 
-            <button className="secondary" onClick={() => onGoTab("obiettivi")}>
-              <Scale size={17} />
-              Registra peso
-            </button>
-          </div>
-        ) : (
-          <div className="calendar-note">
-            Per ora gli inserimenti vengono registrati su oggi. Se vuoi aggiungere nuovi dati, premi “Oggi” e usa le azioni rapide.
-          </div>
-        )}
+			<button className="secondary" onClick={() => onGoTab("obiettivi")}>
+			  <Scale size={17} />
+			  Registra peso
+			</button>
+		  </div>
+		) : (
+		  <>
+			{isPastDay && selectedMeals.length > 0 && (
+			  <div className="calendar-day-actions single-action">
+				<button onClick={() => onCopyMealsFromDate(selectedDate)}>
+				  <ClipboardList size={17} />
+				  Copia pasti su oggi
+				</button>
+			  </div>
+			)}
+
+			<div className="calendar-note">
+			  Gli inserimenti manuali vengono registrati su oggi. Puoi copiare i pasti di questo giorno su oggi se sono presenti pasti registrati.
+			</div>
+		  </>
+		)}
+		
       </section>
 
       <section className="card">

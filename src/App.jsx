@@ -317,45 +317,73 @@ export default function App() {
 	setNotice('Pasto preferito aggiunto a oggi.');
 	}
   
-  function copyYesterdayMeals() {
-	const yesterday = new Date();
-	yesterday.setDate(yesterday.getDate() - 1);
+  function copyMealsFromDate(sourceDate) {
+	  const targetDate = todayKey();
 
-	const year = yesterday.getFullYear();
-	const month = String(yesterday.getMonth() + 1).padStart(2, "0");
-	const day = String(yesterday.getDate()).padStart(2, "0");
-	const yesterdayKey = `${year}-${month}-${day}`;
-
-	const mealsToCopy = state.meals.filter((meal) => meal.date === yesterdayKey);
-
-	if (mealsToCopy.length === 0) {
-		setNotice("Nessun pasto trovato ieri da copiare.");
+	  if (!sourceDate) {
+		setNotice('Nessuna data selezionata da copiare.');
 		return;
-	}
+	  }
 
-	const confirmed = confirm(
-		`Ho trovato ${mealsToCopy.length} pasto/i registrato/i ieri.\n\nVuoi copiarli su oggi?`
-	);
-
-	if (!confirmed) {
+	  if (sourceDate === targetDate) {
+		setNotice('Non puoi copiare i pasti di oggi su oggi.');
 		return;
-	}
+	  }
 
-	const copiedMeals = mealsToCopy.map((meal) => ({
+	  const mealsToCopy = state.meals.filter((meal) => meal.date === sourceDate);
+
+	  if (mealsToCopy.length === 0) {
+		setNotice('Nessun pasto trovato nel giorno selezionato.');
+		return;
+	  }
+
+	  const alreadyCopiedFromThisDate = state.meals.filter(
+		(meal) =>
+		  meal.date === targetDate &&
+		  meal.copiedFromDate === sourceDate
+	  );
+
+	  let confirmMessage = `Ho trovato ${mealsToCopy.length} pasto/i nel giorno selezionato.\n\nVuoi copiarli su oggi?`;
+
+	  if (alreadyCopiedFromThisDate.length > 0) {
+		confirmMessage =
+		  `Hai già copiato ${alreadyCopiedFromThisDate.length} pasto/i da questo giorno.\n\nVuoi copiarli di nuovo su oggi?`;
+	  }
+
+	  const confirmed = confirm(confirmMessage);
+
+	  if (!confirmed) {
+		return;
+	  }
+
+	  const copiedMeals = mealsToCopy.map((meal) => ({
 		...meal,
 		id: uid(),
-		date: todayKey(),
+		date: targetDate,
 		time: nowTime(),
-		source: meal.source ? `${meal.source}-copiato` : "copiato-da-ieri"
-	}));
+		copiedFromDate: sourceDate,
+		source: meal.source ? `${meal.source}-copiato` : 'copiato'
+	  }));
 
-	setState((s) => ({
+	  setState((s) => ({
 		...s,
 		meals: [...s.meals, ...copiedMeals]
-	}));
+	  }));
 
-	setNotice(`${copiedMeals.length} pasto/i copiato/i da ieri.`);
-  }
+	  setNotice(`${copiedMeals.length} pasto/i copiato/i su oggi.`);
+}
+
+function copyYesterdayMeals() {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const year = yesterday.getFullYear();
+  const month = String(yesterday.getMonth() + 1).padStart(2, '0');
+  const day = String(yesterday.getDate()).padStart(2, '0');
+  const yesterdayKey = `${year}-${month}-${day}`;
+
+  copyMealsFromDate(yesterdayKey);
+}
 
   function removeMeal(id) {
     setState((s) => ({
@@ -587,12 +615,13 @@ function setWaterGoalMl(value) {
 		)}
 		
 		{tab === 'calendario' && (
-			<CalendarView
-				meals={state.meals}
-				workouts={state.workouts}
-				weightLog={state.weightLog}
-				onGoTab={setTab}
-			/>
+		  <CalendarView
+			meals={state.meals}
+			workouts={state.workouts}
+			weightLog={state.weightLog}
+			onGoTab={setTab}
+			onCopyMealsFromDate={copyMealsFromDate}
+		  />
 		)}
 
         {tab === 'pasti' && (
