@@ -54,9 +54,15 @@ function buildMonthDays(baseDate) {
   return days;
 }
 
-function DayIndicators({ hasMeals, hasWorkouts, hasWeight }) {
+function DayIndicators({
+  hasMeals,
+  hasWorkouts,
+  hasWeight,
+  hasWater
+}) {
   return (
     <div className="calendar-indicators">
+	  {hasWater && <span className="indicator water" />}
       {hasMeals && <span className="indicator meals" />}
       {hasWorkouts && <span className="indicator workouts" />}
       {hasWeight && <span className="indicator weight" />}
@@ -78,6 +84,7 @@ export default function CalendarView({
   meals,
   workouts,
   weightLog,
+  waterLog,
   onGoTab,
   onCopyMealsFromDate
 }) {
@@ -177,6 +184,9 @@ export default function CalendarView({
             const hasMeals = meals.some((meal) => meal.date === dateKey);
             const hasWorkouts = workouts.some((workout) => workout.date === dateKey);
             const hasWeight = weightLog.some((entry) => entry.date === dateKey);
+			const hasWater = waterLog.some(
+				(entry) => entry.date === dateKey && num(entry.ml) > 0
+			);
 
             return (
               <button
@@ -191,10 +201,11 @@ export default function CalendarView({
                 <span>{day.getDate()}</span>
 
                 <DayIndicators
-                  hasMeals={hasMeals}
-                  hasWorkouts={hasWorkouts}
-                  hasWeight={hasWeight}
-                />
+				  hasMeals={hasMeals}
+				  hasWorkouts={hasWorkouts}
+				  hasWeight={hasWeight}
+				  hasWater={hasWater}
+				/>
               </button>
             );
           })}
@@ -204,6 +215,7 @@ export default function CalendarView({
           <span><i className="indicator meals" /> Pasti</span>
           <span><i className="indicator workouts" /> Sport</span>
           <span><i className="indicator weight" /> Peso</span>
+		  <span><i className="indicator water" /> Acqua</span>
         </div>
       </section>
 

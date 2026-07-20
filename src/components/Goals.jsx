@@ -77,6 +77,7 @@ export default function Goals({
   weightLog,
   meals,
   workouts,
+  waterLog,
   setGoals,
   logWeight
 }) {
@@ -87,6 +88,28 @@ export default function Goals({
   }, [goals]);
 
   const last7Days = useMemo(() => getLastDays(7), []);
+  const waterGoalMl = goals?.waterGoalMl || 2000;
+
+  const last7WaterDays = waterLog.filter(
+    (entry) => last7Days.includes(entry.date)
+  );
+
+  const averageWater =
+    last7WaterDays.length > 0
+      ? Math.round(
+          last7WaterDays.reduce(
+            (sum, entry) => sum + num(entry.ml),
+            0
+          ) / last7WaterDays.length
+        )
+      : 0;
+
+  const waterDaysReached = last7WaterDays.filter(
+    (entry) => num(entry.ml) >= 2000
+  ).length;
+
+  const bestWaterDay =
+    Math.max(...last7WaterDays.map((w) => num(w.ml)), 0);
   const startOfWeekKey = getStartOfWeekKey();
 
   const last30Weights = weightLog.slice(-30).map((entry) => ({
@@ -354,6 +377,38 @@ export default function Goals({
           />
         </div>
       </section>
+	  
+	  <section className="card">
+		  <div className="section-title-row">
+			<div>
+			  <p className="eyebrow">Acqua</p>
+			  <h3>Ultimi 7 giorni</h3>
+			</div>
+		  </div>
+
+		  <div className="progress-stats-grid">
+			<ProgressStat
+			  icon={"💧"}
+			  label="Media"
+			  value={`${(averageWater / 1000).toFixed(2)} L`}
+			  helper="7 giorni"
+			/>
+
+			<ProgressStat
+			  icon={"🎯"}
+			  label="Target"
+			  value={`${waterDaysReached}/7`}
+			  helper="Giorni raggiunti"
+			/>
+
+			<ProgressStat
+			  icon={"🏆"}
+			  label="Best"
+			  value={`${(bestWaterDay / 1000).toFixed(2)} L`}
+			  helper="Miglior giorno"
+			/>
+		  </div>
+		</section>
 
       <section className="card">
         <div className="section-title-row">

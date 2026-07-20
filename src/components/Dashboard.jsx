@@ -101,6 +101,22 @@ function SyncBadge({ isCloudActive, syncStatus }) {
   const todayWaterMl = num(todayWaterEntry?.ml);
   const waterPct =
 	waterGoalMl > 0 ? Math.min(100, Math.round((todayWaterMl / waterGoalMl) * 100)) : 0;
+  let waterStatusText = "Inizia a bere";
+  let waterStatusClass = "low";
+
+  if (waterPct >= 100) {
+    waterStatusText = "🎉 Obiettivo raggiunto";
+    waterStatusClass = "excellent";
+  } else if (waterPct >= 75) {
+    waterStatusText = "Ottimo ritmo";
+    waterStatusClass = "good";
+  } else if (waterPct >= 50) {
+    waterStatusText = "Continua così";
+    waterStatusClass = "medium";
+  } else if (waterPct >= 25) {
+    waterStatusText = "Puoi bere ancora";
+    waterStatusClass = "warning";
+  }
   const yesterday = new Date();
 	yesterday.setDate(yesterday.getDate() - 1);
   const yesterdayKey = yesterday.toISOString().slice(0, 10);
@@ -273,14 +289,18 @@ function SyncBadge({ isCloudActive, syncStatus }) {
 				</p>
 			</div>
 
-			<div className="water-percent">
-				{waterPct}%
+			<div className={`water-percent ${waterStatusClass}`}>
+			{waterPct}%
 			</div>
 			</div>
 
 		<div className="water-progress">
 			<span style={{ width: `${waterPct}%` }} />
 		</div>
+		
+		<p className={`water-status-text ${waterStatusClass}`}>
+			{waterStatusText}
+		</p>
 
 	  <div className="water-actions">
 		<button onClick={() => onAddWater(250)}>

@@ -1764,3 +1764,52 @@ html.theme-dark .plan-status-pill.skipped {
     width: 100%;
   }
 }
+
+.indicator.water {
+  background: #06b6d4;
+}
+
+.water-percent.low {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.water-percent.warning {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+.water-percent.medium {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.water-percent.good,
+.water-percent.excellent {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.water-status-text {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.water-status-text.low {
+  color: #b91c1c;
+}
+
+.water-status-text.warning {
+  color: #c2410c;
+}
+
+.water-status-text.medium {
+  color: #1d4ed8;
+}
+
+.water-status-text.good,
+.water-status-text.excellent {
+  color: #166534;
+}

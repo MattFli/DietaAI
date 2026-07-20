@@ -710,11 +710,12 @@ function setWaterGoalMl(value) {
 		
 		{tab === 'calendario' && (
 		  <CalendarView
-			meals={state.meals}
-			workouts={state.workouts}
-			weightLog={state.weightLog}
-			onGoTab={setTab}
-			onCopyMealsFromDate={copyMealsFromDate}
+			  meals={state.meals}
+			  workouts={state.workouts}
+			  weightLog={state.weightLog}
+			  waterLog={state.waterLog || []}
+			  onGoTab={setTab}
+			  onCopyMealsFromDate={copyMealsFromDate}
 		  />
 		)}
 
@@ -745,12 +746,13 @@ function setWaterGoalMl(value) {
 
         {tab === 'obiettivi' && (
 			<Goals
-			goals={state.goals}
-			weightLog={state.weightLog}
-			meals={state.meals}
-			workouts={state.workouts}
-			setGoals={setGoals}
-			logWeight={logWeight}
+			  goals={state.goals}
+			  weightLog={state.weightLog}
+			  meals={state.meals}
+			  workouts={state.workouts}
+			  waterLog={state.waterLog || []}
+			  setGoals={setGoals}
+			  logWeight={logWeight}
 			/>
 		)}
 
